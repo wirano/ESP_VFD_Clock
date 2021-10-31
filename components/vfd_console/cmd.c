@@ -23,7 +23,7 @@ static int ad_icon_show(int argc, char **argv){
         return 1;
     }
 
-    return vfd_13st84gink_icon_ctrl(&vfd,icon_args.icon_num->ival[0],icon_args.ctrl->ival[0]);
+    return vfd_13st84gink_adicon_ctrl(&vfd, icon_args.icon_num->ival[0], icon_args.ctrl->ival[0]);
 }
 
 static void register_vfd_ad_icon_show(void){

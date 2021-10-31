@@ -26,13 +26,6 @@
 #define GRAY_LEVEL_ZONE_AD2                 0x02
 
 
-
-
-//NC,TIME_D1,SHIFT_D1,CLOCK_D1,HD_D1,USB_D1,LOCK_D1,DOLBY_D1,MUTE_D1,TU1_D1,TU2_D1,MP3_D1,LOOP_D1,NC,NC,NC,:1_D0,:2_D0,:3_d0
-unsigned char VFD_ADRAM[19] = {0x00, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x2, 0x02, 0x02, 0x02, 0x02, 0x02, 0x00, 0x00,
-                               0x00, 0x01, 0x01, 0x01};
-
-
 static void vfd_13st84gink_set_display_timing(vfd_13st84gink_st *vfd_instance)
 {
     uint8_t cmd1 = VFD_13ST84GINK_CMD_TIMING_SET;
@@ -107,7 +100,6 @@ int vfd_13st84gink_init_default(vfd_13st84gink_st *vfd_instance)
 {
     unsigned char VFD_URAM[6] = {0xc0, 0x00, 0x00, 0x03, 0x00, 0x0c};
     unsigned char VFD_DCRAM[14] = {0x07, 0x01, '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 0x07};    //DCRAM
-    unsigned char VFD_CGRAM[40];
 
     vfd_13st84gink_set_display_timing(vfd_instance);
 
@@ -117,13 +109,7 @@ int vfd_13st84gink_init_default(vfd_13st84gink_st *vfd_instance)
 
     vfd_13st84gink_ram_write(vfd_instance, VFD_13ST84GINK_CMD_URAM_WRITE, 0x00, VFD_URAM, sizeof(VFD_URAM));
 
-    vfd_13st84gink_set_dimming(vfd_instance, 255);
-
-    vfd_13st84gink_ram_write(vfd_instance, VFD_13ST84GINK_CMD_CGRAM_WRITE, 0x00, VFD_CGRAM, sizeof(VFD_CGRAM));
-
-    vfd_13st84gink_ram_write(vfd_instance, VFD_13ST84GINK_CMD_DCRAM_WRITE, 0x00, VFD_DCRAM, sizeof(VFD_DCRAM));
-
-    vfd_13st84gink_ram_write(vfd_instance, VFD_13ST84GINK_CMD_ADRAM_WRITE, 0x00, VFD_ADRAM, sizeof(VFD_ADRAM));
+    vfd_13st84gink_set_dimming(vfd_instance, 240);
 
     vfd_13st84gink_disp_ctrl(vfd_instance, 1);
 
@@ -155,14 +141,37 @@ int vfd_13st84gink_display_load_CGRAM(vfd_13st84gink_st *vfd_instance, const uin
     return 0;
 }
 
-int vfd_13st84gink_icon_ctrl(vfd_13st84gink_st *vfd_instance, uint8_t icon, uint8_t ctrl)
+int vfd_13st84gink_adicon_ctrl(vfd_13st84gink_st *vfd_instance, uint8_t adicon, int ctrl)
 {
 
     if (ctrl > 1) ctrl = 1;
 
-    if (icon < VFD_AD_ICON_COLON1) ctrl <<= 1;
+    if (adicon < VFD_AD_ICON_COLON1) ctrl <<= 1;
 
-    vfd_13st84gink_ram_write(vfd_instance, VFD_13ST84GINK_CMD_ADRAM_WRITE, icon, &ctrl, sizeof(ctrl));
+    vfd_13st84gink_ram_write(vfd_instance, VFD_13ST84GINK_CMD_ADRAM_WRITE, adicon, &ctrl, sizeof(ctrl));
+
+    return 0;
+}
+
+int vfd_13st84gink_cgicon_ctrl(vfd_13st84gink_st *vfd_instance, uint64_t cgicon, int ctrl)
+{
+    union {
+        uint64_t icon_code;
+        uint8_t icon_buffer[8];
+    }buffer;
+
+    uint8_t addr = VFD_CGRAM_ICON_ADDR_OFFSET;
+
+    if(ctrl) {
+        vfd_instance->_CGRAM_icon |= cgicon;
+    } else{
+    vfd_instance->_CGRAM_icon &= (~cgicon);
+    }
+
+    buffer.icon_code = vfd_instance->_CGRAM_icon;
+
+    vfd_13st84gink_ram_write(vfd_instance,VFD_13ST84GINK_CMD_CGRAM_WRITE,addr,buffer.icon_buffer,5);
+    vfd_13st84gink_ram_write(vfd_instance,VFD_13ST84GINK_CMD_DCRAM_WRITE,0,&addr,sizeof(addr));
 
     return 0;
 }
