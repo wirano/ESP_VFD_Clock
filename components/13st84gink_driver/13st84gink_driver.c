@@ -99,9 +99,10 @@ vfd_13st84gink_ram_write(vfd_13st84gink_st *vfd_instance, uint8_t ram_write_type
 int vfd_13st84gink_init_default(vfd_13st84gink_st *vfd_instance)
 {
     unsigned char VFD_URAM[6] = {0xc0, 0x00, 0x00, 0x03, 0x00, 0x0c};
-    unsigned char VFD_DCRAM[14] = {0x07, 0x01, '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 0x07};    //DCRAM
 
     vfd_13st84gink_set_display_timing(vfd_instance);
+
+    vfd_instance->driver->vfd_power_ctrl(1);
 
     vfd_instance->driver->vfd_hardware_reset();
 

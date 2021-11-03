@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="Description" content="VFD时钟WiFi及闹钟设置">
+    <title>VFD_Clock</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+
+<h1 style="text-align: center;font-family: 华文楷体" >VFD时钟设置</h1>
+
+<div>
+    <form method="post" style="text-align: center" align="center;">
+        <table id="wifi_table" class="gridtable" style="text-align: center;align-items: center;width: 500px;font-size: 30px;font-family: 华文楷体" border="1" align="center" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>WiFi名称</th>
+                    <th>信号</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="clusss" >
+                    <td>WiFi名称</td>
+                    <td><input type="text" id="wifi_ssid" name="wifi_ssid" style="font-size: 30px;font-family: 华文楷体" placeholder="WiFi_Name"></td>
+                </tr>
+                <tr>
+                    <td>WiFi密码</td>
+                    <td><input type="text" id="wifi_password" name="wifi_password" style="font-size: 30px;font-family: 华文楷体" placeholder="WiFi_Password"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="submit"  onclick="Send_this(1)" class="btn_info" id="link" style="background-color: #DC143C ; color:#FFFFFF;font-family: 华文楷体;font-size: 30px;width: 500px;";>连接WiFi</button></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="button"  onclick="Send_this(2)" class="btn_danger" id="seek" style="background-color: #1E90FF;color:#FFFFFF;font-family: 华文楷体;font-size: 30px;width: 500px">搜索WiFi</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<br><br><br><br><br>
+<div>
+    <table id="clock_table" class="clocktable" style="text-align: center;align-items: center;width: 500px;font-size: 30px;font-family: 华文楷体" border="1" align="center" cellspacing="0">
+        <thead>
+            <tr>
+                <th colspan="2">闹钟设置</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>闹钟开关</td>
+                <td><input type="radio" name="alarm_switch" value="alarm_close" id="alarm_off" onclick="set_time(0)" checked >关<input type="radio" name="alarm_switch" value="alarm_open" id="alarm_on" onclick="set_time(1)">开</td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit"  onclick="Send_this(3)" class="clock_set" id="clock_set" style="background-color: #DC143C ; color:#FFFFFF;font-family: 华文楷体;font-size: 30px;width: 500px;";>设置闹钟</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+<script src="VFD_Clock.js"></script>
+</html>

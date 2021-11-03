@@ -8,6 +8,7 @@
 #include "vfd_wifi.h"
 #include "vfd_rtc_time.h"
 #include "vfd_display.h"
+#include "vfd_server.h"
 
 void app_main(void)
 {
@@ -20,9 +21,11 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
     vfd_console_init();
 
+    vfd_display_init();
+
     wifi_init();
 
-    vfd_rtc_init();
+    vfd_server_init();
 
-    vfd_display_init();
+    vfd_rtc_init();
 }

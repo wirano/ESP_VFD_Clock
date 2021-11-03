@@ -7,6 +7,7 @@
 #include "argtable3/argtable3.h"
 #include "../13st84gink_driver/include/13st84gink_driver.h"
 #include "cmd_system.h"
+#include "cmd_nvs.h"
 
 static struct {
     struct arg_int *icon_num;
@@ -84,6 +85,7 @@ static void register_vfd_write(void){
 
 void vfd_console_cmd_register(void){
     register_system();
+    register_nvs();
 
     register_vfd_ad_icon_show();
     register_vfd_write();

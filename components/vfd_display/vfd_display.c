@@ -15,11 +15,12 @@
 #include "../13st84gink_driver/include/13st84gink_driver.h"
 
 
-#define VFD_CS_PIN  14
-#define VFD_CP_PIN  27
-#define VFD_DA_PIN  26
+#define VFD_CS_PIN  11
+#define VFD_CP_PIN  12
+#define VFD_DA_PIN  13
+#define VFD_RST_PIN 10
 
-#define VFD_RST_PIN 12
+#define VFD_POWER_PIN 14
 
 
 static const char TAG[] = "vfd_display";
@@ -74,10 +75,22 @@ static void vfd_gpio_init(void)
 
     ret = gpio_config(&vfd_gpio_cfg);
     ESP_ERROR_CHECK(ret);
+
     gpio_set_level(VFD_CS_PIN,1);
+
+    vfd_gpio_cfg.intr_type = GPIO_INTR_DISABLE;
+    vfd_gpio_cfg.pull_up_en = GPIO_PULLUP_DISABLE;
+    vfd_gpio_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    vfd_gpio_cfg.mode = GPIO_MODE_OUTPUT;
+    vfd_gpio_cfg.pin_bit_mask = 1 << VFD_POWER_PIN;
+
+    ret = gpio_config(&vfd_gpio_cfg);
+    ESP_ERROR_CHECK(ret);
+
+    gpio_set_level(VFD_POWER_PIN,0);
 }
 
-static void vfd_spi_trans(const uint8_t *buffer, uint8_t len)
+static void vfd_spi_trans(const uint8_t *buffer, int len)
 {
     esp_err_t ret;
     spi_transaction_t t;
@@ -101,8 +114,12 @@ static void vfd_hardware_rst(void)
     ESP_LOGI(TAG,"vfd reset");
 }
 
-static void vfd_cs_set(uint8_t level){
+static void vfd_cs_set(int level){
     gpio_set_level(VFD_CS_PIN,level);
+}
+
+static void vfd_power_ctrl(int ctrl){
+    gpio_set_level(VFD_POWER_PIN,ctrl);
 }
 
 _Noreturn static void vfd_display_task(void *args){
@@ -113,15 +130,22 @@ _Noreturn static void vfd_display_task(void *args){
 
     char str_buffer[13];
 
+    int brightness[] = {2,3,4,5,7,9,13,17,25,35,50,70,100,130,160,200,240};
+
     vfd_driver.vfd_write_data = vfd_spi_trans;
     vfd_driver.vfd_hardware_reset = vfd_hardware_rst;
     vfd_driver.vfd_cs_set = vfd_cs_set;
+    vfd_driver.vfd_power_ctrl = vfd_power_ctrl;
     vfd.driver = &vfd_driver;
 
     vfd_13st84gink_init_default(&vfd);
 
-    vfd_13st84gink_display_str(&vfd,"Hello World!");
-    vTaskDelay(300 / portTICK_PERIOD_MS);
+    vfd_13st84gink_display_str(&vfd,"  Hi Honey");
+
+    for (int i = 0; i < sizeof(brightness) / sizeof(int); ++i) {
+        vfd_13st84gink_set_dimming(&vfd,(uint8_t )brightness[i]);
+        vTaskDelay((50)/ portTICK_PERIOD_MS);
+    }
 
     while(1){
         time(&time_now);

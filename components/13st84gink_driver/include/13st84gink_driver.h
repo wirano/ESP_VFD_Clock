@@ -56,11 +56,12 @@
 
 typedef struct
 {
+    void (*vfd_power_ctrl)(int ctrl);
     void (*vfd_hardware_reset)(void);
 
-    void (*vfd_write_data)(const uint8_t *data, uint8_t len);
+    void (*vfd_write_data)(const uint8_t *data, int len);
 
-    void (*vfd_cs_set)(uint8_t pin_level);
+    void (*vfd_cs_set)(int pin_level);
 } vfd_13st84gink_driver_st;
 
 typedef struct

@@ -2,5 +2,9 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.5)
 
+set(IDF_TARGET esp32s2)
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(ESP_VFD_Clock)
+
+spiffs_create_partition_image(front front FLASH_IN_PROJECT)
